@@ -1,0 +1,93 @@
+/**
+\mainpage Sandbox API Documentation
+
+## What is it?
+
+The Sandbox is cross-platform application framework written in C that allows to create flexible applications consisting of loosely coupled modules.
+Modules are shared libraries which are implementing Sandbox API module interface.
+Modules can communicate with each other using events and module APIs.
+Modules are dynamically loaded by the application according to the configuration.
+It is possible to define which modules have to be loaded during application start.
+The application implementation, the executable file must implement corresponding interface to be able to work with different modules.
+So as with modules it is possible to create alternative application implementations, not only use the generic one.
+The C API provides possibility to build module or application implementations using other languages which can have bindings to C shared libraries.
+
+## Development
+
+### Requirements
+
+#### Environment and tools
+
+- Cmake 3.5
+- GCC 5.4.0 on Debian Linux
+- Git
+- Human brains and couple of hands
+
+#### Third party libraries
+
+To build modules supplied with the API, you will need some third party libraries.
+
+Core Module:
+- [SDL 2](http://www.libsdl.org/download-2.0.php) - you can install it with package manager or download from the website.
+
+Bgfx Rendering Module:
+- [bx](https://github.com/bkaradzic/bx) - download, build and install (make install).
+- [bgfx](https://bkaradzic.github.io/bgfx/) - download, build and install (make install).
+
+### Building
+
+```
+mkdir build && cd build
+cmake ..
+make
+```
+
+### How to create a module
+
+You can use example module source files as the starting point for your new module.
+In your module you **must** implement 5 basic functions:
+
+- Initialization
+- Update
+- Shutdown
+- Public API list accessor
+- Call function proxy
+
+### API Code Conventions
+
+- Typedefs are defined in snake_case with trailing "_t".
+- Zero-terminated string objects are prefixed with "sz".
+- Arrays are prefixed with "arr" to distinguish them from pointers.
+- Handles to loaded libraries are prefixed with "h".
+- Pointers are prefixed with "p".
+- Pointers to functions are prefixed with "fn".
+- Static variables are defined in UpperCamelCase.
+- API function names are defined with corresponding prefixes, like CApplication_ for Application and MModule_ for Module.
+- C language module implementation functions are using M followed by module name, like MCore_FunctionName.
+
+### Possible issues
+
+#### During Runtime
+
+##### Undefined symbol: [SYMBOL_NAME]
+
+This error means that you must link additional libraries to the application.
+This can be done adjusting `target_link_libraries` line in cmake file for your module like in example below.
+
+`target_link_libraries(YourModule PUBLIC [LIBRARY NAMES])`
+
+Some examples of errors and libraries you need to link your module with.
+Missing symbol(s) | Library(ies) to link
+--- | ---
+__cxa_pure_virtual | stdc++
+SDL_* | SDL [SDLmain]
+pthread_* | pthread
+
+*/
+
+### Configuration
+
+#### Ini file structure:
+
+[Modules]
+Example=SandboxExampleModule
