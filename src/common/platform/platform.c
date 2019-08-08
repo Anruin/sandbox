@@ -22,6 +22,7 @@
 #include <dlfcn.h>
 #include <unistd.h>
 #include <string.h>
+#include <SDL_log.h>
 
 #define MODULE_PREFIX_LENGTH 2 // (strlen("./"))
 #define MODULE_SUFFIX_LENGTH 8 // (strlen("lib.so") + 1)
@@ -49,7 +50,7 @@ CError APlatform_LoadModule(CStringConst pszModuleName, AModule *pModule) {
 #endif
 
     if (pModule->hLibrary == NULL) {
-        DEBUG_PRINT("SDL_GetError: %s\n", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_GetError: %s\n", SDL_GetError());
         return CERROR_FAIL;
     }
 
@@ -59,7 +60,7 @@ CError APlatform_LoadModule(CStringConst pszModuleName, AModule *pModule) {
     CStringConst pszModuleNameSym = SYMBOL_TO_CSTRING(AModule_Name);
     pModule->pszName = *(CStringPtr)SDL_LoadFunction(pModule->hLibrary, pszModuleNameSym);
     if (pModule->pszName == NULL) {
-        DEBUG_PRINT("Unable to find symbol %s in loaded module!\n", pszModuleNameSym);
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to find symbol %s in loaded module!\n", pszModuleNameSym);
         APlatform_UnloadModule(pModule);
         return CERROR_FAIL;
     }
@@ -68,7 +69,7 @@ CError APlatform_LoadModule(CStringConst pszModuleName, AModule *pModule) {
     CStringConst pszModuleOnCreateSym = SYMBOL_TO_CSTRING(AModule_OnCreate);
     pModule->pfnOnCreate = (void (*)())SDL_LoadFunction(pModule->hLibrary, pszModuleOnCreateSym);
     if (pModule->pfnOnCreate == NULL) {
-        DEBUG_PRINT("Unable to find symbol %s in loaded module!\n", pszModuleOnCreateSym);
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to find symbol %s in loaded module!\n", pszModuleOnCreateSym);
         APlatform_UnloadModule(pModule);
         return CERROR_FAIL;
     }
@@ -77,7 +78,7 @@ CError APlatform_LoadModule(CStringConst pszModuleName, AModule *pModule) {
     CStringConst pszModuleOnReadySym = SYMBOL_TO_CSTRING(AModule_OnReady);
     pModule->pfnOnReady = (void (*)())SDL_LoadFunction(pModule->hLibrary, pszModuleOnReadySym);
     if (pModule->pfnOnReady == NULL) {
-        DEBUG_PRINT("Unable to find symbol %s in loaded module!\n", pszModuleOnReadySym);
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to find symbol %s in loaded module!\n", pszModuleOnReadySym);
         APlatform_UnloadModule(pModule);
         return CERROR_FAIL;
     }
@@ -86,7 +87,7 @@ CError APlatform_LoadModule(CStringConst pszModuleName, AModule *pModule) {
     CStringConst pszModuleOnUpdateSym = SYMBOL_TO_CSTRING(AModule_OnUpdate);
     pModule->pfnOnUpdate = (void (*)())SDL_LoadFunction(pModule->hLibrary, pszModuleOnUpdateSym);
     if (pModule->pfnOnUpdate == NULL) {
-        DEBUG_PRINT("Unable to find symbol %s in loaded module!\n", pszModuleOnUpdateSym);
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to find symbol %s in loaded module!\n", pszModuleOnUpdateSym);
         APlatform_UnloadModule(pModule);
         return CERROR_FAIL;
     }
@@ -95,7 +96,7 @@ CError APlatform_LoadModule(CStringConst pszModuleName, AModule *pModule) {
     CStringConst pszModuleOnDestroySym = SYMBOL_TO_CSTRING(AModule_OnDestroy);
     pModule->pfnOnDestroy = (void (*)())SDL_LoadFunction(pModule->hLibrary, pszModuleOnDestroySym);
     if (pModule->pfnOnDestroy == NULL) {
-        DEBUG_PRINT("Unable to find symbol %s in loaded module!\n", SYMBOL_TO_CSTRING(AModule_OnDestroy));
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to find symbol %s in loaded module!\n", SYMBOL_TO_CSTRING(AModule_OnDestroy));
         APlatform_UnloadModule(pModule);
         return CERROR_FAIL;
     }

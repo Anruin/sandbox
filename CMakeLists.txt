@@ -32,7 +32,8 @@ add_subdirectory(src/common)
 add_subdirectory(src/configuration)
 add_subdirectory(src/application)
 add_subdirectory(src/modules/example)
-add_subdirectory(src/modules/tracker)
+add_subdirectory(src/modules/server)
+add_subdirectory(src/modules/client)
 
 # Add tests.
 add_subdirectory(src/tests)

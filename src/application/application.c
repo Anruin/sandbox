@@ -6,23 +6,17 @@
 //
 //
 
-#include <string.h>
-#include <common/debug.h>
-#include "application.h"
-#include "api/application.h"
-#include "api/platform.h"
-#include "configuration/configuration.h"
-
-#if defined(_WIN32)
-#include <windows.h>
 #include <SDL_stdinc.h>
-
-#endif
+#include <api/application.h>
+#include <api/platform.h>
+#include <SDL_log.h>
+#include "application.h"
 
 // Command line arguments
 
 typedef struct ACommandArguments {
     CString pConfigurationPath;
+    u32 nLogLevel;
 } ACommandArguments;
 
 static ACommandArguments AApplication_CommandArguments = {
@@ -84,6 +78,10 @@ static void AApplication_ParseCommandArguments(i32 argc, CStringPtr argv) {
         if (i + 1 < argc) {
             if (SDL_strcmp(argv[i], "--config") == 0)
                 AApplication_CommandArguments.pConfigurationPath = argv[i + 1];
+
+            if (SDL_strcmp(argv[i], "--level") == 0)
+                AApplication_CommandArguments.nLogLevel = SDL_strtoul(argv[i + 1], NULL, 10);
+
             i++;
         }
     }
@@ -91,25 +89,29 @@ static void AApplication_ParseCommandArguments(i32 argc, CStringPtr argv) {
 
 void AApplication_OnCreate() {
 
-	const u32 nProcessorCount = APlatform_GetProcessorCount();
-    DEBUG_PRINT("Logical processor count is %d.\n", nProcessorCount);
+    // Enable standard application logging.
+    SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO);
 
-	const u32 nRamAmount = APlatform_GetSystemRAM();
-    DEBUG_PRINT("RAM amount is %d.\n", nRamAmount);
+    const u32 nProcessorCount = APlatform_GetProcessorCount();
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Logical processor count is %d.\n", nProcessorCount);
 
-	const f64 fStartupTime = APlatform_GetTime();
-    DEBUG_PRINT("Startup time is %.6f.\n", fStartupTime);
+    const u32 nRamAmount = APlatform_GetSystemRAM();
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "RAM amount is %d.\n", nRamAmount);
+
+    const f64 fStartupTime = APlatform_GetTime();
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Startup time is %.6f.\n", fStartupTime);
 
     AModuleNameInfo moduleNameInfo = {0};
-    CError nCode = AApplication_LoadConfigurationFromIniFile(AApplication_CommandArguments.pConfigurationPath, &moduleNameInfo);
+    CError nCode = AApplication_LoadConfigurationFromIniFile(AApplication_CommandArguments.pConfigurationPath,
+                                                             &moduleNameInfo);
 
     assert(nCode == CERROR_OK);
 
     // Load modules.
     for (u32 i = 0; i < moduleNameInfo.nCount; i++) {
-	    CStringConst pModuleName = moduleNameInfo.arrModuleNames[i];
+        CStringConst pModuleName = moduleNameInfo.arrModuleNames[i];
 
-        DEBUG_PRINT("Loading module %s.\n", pModuleName);
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Loading module %s.\n", pModuleName);
 
         nCode = APlatform_LoadModule(pModuleName, &AApplication_Modules.arrModules[i]);
 
@@ -149,10 +151,10 @@ void AApplication_OnDestroy() {
     }
 
     const f64 fShutdownTime = APlatform_GetTime();
-    DEBUG_PRINT("Shutdown time is %.6f.\n", fShutdownTime);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Shutdown time is %.6f.\n", fShutdownTime);
 }
 
 void AApplication_Quit(i32 nCode) {
-    DEBUG_PRINT("Exit code: %d", nCode);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Exit code: %d", nCode);
     AApplication_IsRunning = 0;
 }

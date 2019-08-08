@@ -60,25 +60,7 @@
 // Cast value to type.
 #define CAST(v, type) ((type)(v))
 
-#ifdef NDEBUG
-	#ifdef _MSC_VER
-		#define DEBUG_PRINT(fmt, ...)
-	#else
-		#define DEBUG_PRINT(fmt, args...)
-	#endif
-#else
-	#include <stdio.h>
-
 #include <SDL_config.h>
-
-#ifdef CPLATFORM_WINDOWS
-		// Debug log console output.
-		#define DEBUG_PRINT(fmt, ...) fprintf(stderr, fmt, ## __VA_ARGS__)
-	#else
-		// Debug log console output.
-		#define DEBUG_PRINT(fmt, args...) fprintf(stderr, fmt, ## args)
-	#endif
-#endif
 
 typedef int8_t i8;
 typedef uint8_t u8;

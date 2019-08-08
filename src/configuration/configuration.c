@@ -9,6 +9,7 @@
 #include "configuration.h"
 #include <ctype.h>
 #include <string.h>
+#include <stdio.h>
 
 #define COMMENT_PREFIX ";"
 #define MAX_LINE 1024

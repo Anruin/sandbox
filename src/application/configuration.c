@@ -4,6 +4,7 @@
 #include <common/string/string.h>
 #include <memory.h>
 #include <configuration/configuration.h>
+#include <SDL_log.h>
 #include "application.h"
 
 static CError AApplication_ConfigurationLineParseCallback(void *pUserData, CStringConst pSection, CStringConst pKey, CStringConst pValue, i32 nLine) {
@@ -11,7 +12,7 @@ static CError AApplication_ConfigurationLineParseCallback(void *pUserData, CStri
 	if (strcmp(pSection, MODULE_INI_SECTION) == 0) {
 		AModuleNameInfo *pModuleInfo = (AModuleNameInfo *) pUserData;
 
-		DEBUG_PRINT("Adding module [%s] to loading queue, loading it from %s, ini line %d.\n", pKey, pValue, nLine);
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Adding module [%s] to loading queue, loading it from %s, ini line %d.\n", pKey, pValue, nLine);
 
 		i32 nIndex = pModuleInfo->nCount++;
 
@@ -22,7 +23,7 @@ static CError AApplication_ConfigurationLineParseCallback(void *pUserData, CStri
 	} else if (strcmp(pSection, "Nodes") == 0) {
 
 		// Collect configuration for modules
-		DEBUG_PRINT("%s\n", (char*)pUserData);
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s\n", (char*)pUserData);
 
 		return CERROR_OK;
 	}
@@ -33,11 +34,11 @@ static CError AApplication_ConfigurationLineParseCallback(void *pUserData, CStri
 CError AApplication_LoadConfigurationFromIniFile(CStringConst pPath, AModuleNameInfo *pModuleNameInfo) {
 
 	if (AConfiguration_LoadIniFile(pPath, AApplication_ConfigurationLineParseCallback, (void *) pModuleNameInfo) < 0) {
-		DEBUG_PRINT("Error loading configuration from %s.\n", pPath);
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Error loading configuration from %s.\n", pPath);
 		return CERROR_FAIL;
 	}
 
-	DEBUG_PRINT("Configuration loaded from %s.\n", pPath);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Configuration loaded from %s.\n", pPath);
 
 	return CERROR_OK;
 }
