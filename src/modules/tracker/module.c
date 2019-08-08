@@ -8,8 +8,7 @@
 #include <api/module.h>
 #include <common/network/peer.h>
 #include <common/common.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+#include <SDL_net.h>
 
 CStringConst AModule_Name = "Tracker";
 
@@ -20,9 +19,7 @@ i16 socketPort = 8080;
 void AModule_OnCreate() {
     peers = NULL;
 
-    DEBUG_PRINT("Starting server on port %d", socketPort);
-
-    pSocket = socket(AF_INET, SOCK_DGRAM, 0);
+    /*pSocket = socket(AF_INET, SOCK_DGRAM, 0);
 
     if (pSocket < 0) {
         DEBUG_PRINT("Could not create a socket.");
@@ -34,7 +31,7 @@ void AModule_OnCreate() {
     sockAddressIn.sin_addr.s_addr = htonl(INADDR_ANY);
     sockAddressIn.sin_port = htons(socketPort);
 
-
+*/
 
     DEBUG_PRINT("Tracker module created!\n");
 }

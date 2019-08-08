@@ -2,13 +2,10 @@
 set(SOURCE_FILES
         common.h
         errors.h
-        event.c
         generic/object.c
         containers/vector.c
         string/string.c
-        task.c
         platform/platform.c
-        platform/thread.c
         debug.c
         containers/buffer.c
         memory/allocate.h

@@ -4,7 +4,6 @@
 #include "common/common.h"
 #include "common/string/string.h"
 #include "common/containers/vector.h"
-#include "common/task.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,6 +18,8 @@ LOCAL_SYMBOL void APlatform_UnloadModule(AModule *pModule);
 LOCAL_SYMBOL f64 APlatform_GetTime();
 
 LOCAL_SYMBOL u32 APlatform_GetProcessorCount();
+
+LOCAL_SYMBOL u32 APlatform_GetSystemRAM();
 
 // Platform
 

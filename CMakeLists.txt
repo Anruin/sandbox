@@ -13,8 +13,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BINARY_DIR})
 # CMake modules path.
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
+if (MSVC)
+    set(SDL2_DIR ${CMAKE_CURRENT_SOURCE_DIR}/vendor/SDL2)
+	set(SDL2_NET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/vendor/SDL2_net)
+    include(${SDL2_DIR}/sdl2-config.cmake)
+    include(${SDL2_NET_DIR}/sdl2_net-config.cmake)
+else ()
+    find_package(SDL2 REQUIRED)
+	find_package(SDL2_net REQUIRED)
+endif ()
+
 # Project common include directories.
-include_directories(src)
+include_directories(${SDL2_INCLUDE_DIR} ${SDL2_NET_INCLUDE_DIR} src)
 
 # Add subdirectories.
 add_subdirectory(src/api)

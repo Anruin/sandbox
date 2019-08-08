@@ -1,11 +1,12 @@
 # Configure additional required libraries.
 set(REQUIRED_LIBRARIES
+		${SDL2_LIBRARY}
 		SandboxCommon
 		SandboxConfiguration)
 
 if (UNIX)
 	# Add dl for dynamic loaded libraries on UNIX systems
-	set(REQUIRED_LIBRARIES ${REQUIRED_LIBRARIES} dl)
+	set(REQUIRED_LIBRARIES ${REQUIRED_LIBRARIES} c)
 endif ()
 
 # Application source files.
@@ -24,7 +25,7 @@ if (MSVC)
 endif ()
 
 # Copy assets to build directory.
-file(GLOB Assets ${CMAKE_SOURCE_DIR}/assets)
-add_custom_target(AssetsCopy)
-add_custom_command(TARGET AssetsCopy PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${Assets} ${BINARY_DIR}/assets)
-add_dependencies(SandboxApp AssetsCopy)
+#file(GLOB Assets ${CMAKE_SOURCE_DIR}/assets)
+#add_custom_target(AssetsCopy)
+#add_custom_command(TARGET AssetsCopy PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${Assets} ${BINARY_DIR}/assets)
+#add_dependencies(SandboxApp AssetsCopy)

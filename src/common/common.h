@@ -5,7 +5,7 @@
 #pragma once
 
 #if defined(_WIN32) && defined(_MSC_VER)
-	#define CPLATFORM_WINDOWS
+	#define CPLATFORM_WINDOWS 1
 	#define strdup _strdup
 #endif
 
@@ -52,10 +52,10 @@
 #define SIZE(v) (size_t)(v)
 
 // Interprets value as string.
-#define TO_PSZ(s) #s
+#define TO_CSTRING(s) #s
 
 // Interprets symbol as string.
-#define SYMBOL_TO_PSZ(s) TO_PSZ(s)
+#define SYMBOL_TO_CSTRING(s) TO_CSTRING(s)
 
 // Cast value to type.
 #define CAST(v, type) ((type)(v))
@@ -68,7 +68,10 @@
 	#endif
 #else
 	#include <stdio.h>
-	#ifdef CPLATFORM_WINDOWS
+
+#include <SDL_config.h>
+
+#ifdef CPLATFORM_WINDOWS
 		// Debug log console output.
 		#define DEBUG_PRINT(fmt, ...) fprintf(stderr, fmt, ## __VA_ARGS__)
 	#else

@@ -8,11 +8,13 @@
 #include <api/application.h>
 #include "api/module.h"
 #include "common/common.h"
+#include <common/debug.h>
+#include <SDL_log.h>
 
 CStringConst AModule_Name = "Example";
 
 void AModule_OnCreate() {
-    DEBUG_PRINT("Example module created!\n");
+    SDL_Log("Example module created!\n");
 }
 
 void AModule_OnReady() {

@@ -15,6 +15,8 @@
 
 #if defined(_WIN32)
 #include <windows.h>
+#include <SDL_stdinc.h>
+
 #endif
 
 // Command line arguments
@@ -80,7 +82,7 @@ void AApplication_Run(int argc, char *argv[]) {
 static void AApplication_ParseCommandArguments(i32 argc, CStringPtr argv) {
     for (i32 i = 1; i < argc; i++) {
         if (i + 1 < argc) {
-            if (strcmp(argv[i], "--config") == 0)
+            if (SDL_strcmp(argv[i], "--config") == 0)
                 AApplication_CommandArguments.pConfigurationPath = argv[i + 1];
             i++;
         }
@@ -89,10 +91,13 @@ static void AApplication_ParseCommandArguments(i32 argc, CStringPtr argv) {
 
 void AApplication_OnCreate() {
 
-    u32 nProcessorCount = APlatform_GetProcessorCount();
-    DEBUG_PRINT("Processor count is %d.\n", nProcessorCount);
+	const u32 nProcessorCount = APlatform_GetProcessorCount();
+    DEBUG_PRINT("Logical processor count is %d.\n", nProcessorCount);
 
-    f32 fStartupTime = APlatform_GetTime();
+	const u32 nRamAmount = APlatform_GetSystemRAM();
+    DEBUG_PRINT("RAM amount is %d.\n", nRamAmount);
+
+	const f64 fStartupTime = APlatform_GetTime();
     DEBUG_PRINT("Startup time is %.6f.\n", fStartupTime);
 
     AModuleNameInfo moduleNameInfo = {0};
@@ -102,7 +107,7 @@ void AApplication_OnCreate() {
 
     // Load modules.
     for (u32 i = 0; i < moduleNameInfo.nCount; i++) {
-        CString pModuleName = moduleNameInfo.arrModuleNames[i];
+	    CStringConst pModuleName = moduleNameInfo.arrModuleNames[i];
 
         DEBUG_PRINT("Loading module %s.\n", pModuleName);
 
@@ -138,14 +143,12 @@ void AApplication_OnUpdate() {
 
 void AApplication_OnDestroy() {
 
-    ATaskManager_OnDestroy();
-
     for (i32 i = AApplication_Modules.nCount - 1; i >= 0; i--) {
         AApplication_Modules.arrModules[i].pfnOnDestroy();
         APlatform_UnloadModule(&AApplication_Modules.arrModules[i]);
     }
 
-    f32 fShutdownTime = APlatform_GetTime();
+    const f64 fShutdownTime = APlatform_GetTime();
     DEBUG_PRINT("Shutdown time is %.6f.\n", fShutdownTime);
 }
 

@@ -21,3 +21,17 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 Sandbox.cbp
+
+# Vendor
+vendor/*
+
+# SDL2
+!vendor/SDL2/
+vendor/SDL2/*
+
+!vendor/SDL2_net/
+vendor/SDL2_net/*
+
+!vendor/SDL2/sdl2-config.cmake
+!vendor/SDL2_net/sdl2_net-config.cmake
+/.vs

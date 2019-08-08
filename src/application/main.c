@@ -2,11 +2,11 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include "api/application.h"
-#if defined(_WIN32) && defined(_MSC_VER)
+#if defined(_WIN32) && defined(_MSC_VER) && defined(vld)
 #include <vld.h>
 #endif
 
-int main(int argc, char* argv[]) {
+int main(const int argc, char* argv[]) {
 
 #if _WIN32
 	// _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
