@@ -14,44 +14,45 @@
 #include <string.h>
 #include <stdio.h>
 #include <arpa/inet.h>
+#include <SDL_log.h>
 
 CStringConst AModule_Name = "SocketClient";
 
 CPeer* peers;
 i32 pSocket;
-i16 socketPort = 8080;
+i16 nSocketPort = 8080;
 
 void AModule_OnCreate() {
     peers = NULL;
 
-    DEBUG_PRINT("%s: starting server on port %d.\n", AModule_Name, socketPort);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s: starting server on port %d.\n", AModule_Name, nSocketPort);
 
     pSocket = socket(AF_INET, SOCK_STREAM, 0);
 
     if (pSocket < 0) {
-        DEBUG_PRINT("%s: could not create a socket.\n", AModule_Name);
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s: could not create a socket.\n", AModule_Name);
         assert(0);
     } else {
-        DEBUG_PRINT("%s: socket created.\n", AModule_Name);
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s: socket created.\n", AModule_Name);
     }
 
     struct sockaddr_in serverAddress = {0}, client = {0};
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
-    serverAddress.sin_port = htons(socketPort);
+    serverAddress.sin_port = htons(nSocketPort);
 
     if ((connect(pSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress))) != 0) {
-        DEBUG_PRINT("%s: socket connect failed.\n", AModule_Name);
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s: socket connect failed.\n", AModule_Name);
         assert(0);
     } else {
-        DEBUG_PRINT("%s: socket connected.\n", AModule_Name);
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s: socket connected.\n", AModule_Name);
     }
 
-    DEBUG_PRINT("%s: module created!\n", AModule_Name);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s: module created!\n", AModule_Name);
 }
 
 void AModule_OnReady() {
-    DEBUG_PRINT("%s: module ready!\n", AModule_Name);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s: module ready!\n", AModule_Name);
 }
 
 void AModule_OnUpdate() {
@@ -68,12 +69,12 @@ void AModule_OnUpdate() {
 
     read(pSocket, pBuffer, sizeof(pBuffer));
 
-    DEBUG_PRINT("%s: received: %s", AModule_Name, pBuffer);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s: received: %s", AModule_Name, pBuffer);
 
     bzero(pBuffer, 255);
 
     if (strncmp("exit", pBuffer, 4) == 0) {
-        DEBUG_PRINT("%s: exit command received.\n", AModule_Name);
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s: exit command received.\n", AModule_Name);
 
         // AApplication_Quit(0);
     }
@@ -82,5 +83,5 @@ void AModule_OnUpdate() {
 void AModule_OnDestroy() {
     close(pSocket);
 
-    DEBUG_PRINT("%s: module unloaded!\n", AModule_Name);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s: module unloaded!\n", AModule_Name);
 }

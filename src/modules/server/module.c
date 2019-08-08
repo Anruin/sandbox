@@ -15,55 +15,32 @@
 #include <unistd.h> // for close
 #include <string.h>
 #include <SDL_log.h>
+#include <SDL_net.h>
 
 CStringConst AModule_Name = "SocketServer";
 
-CPeer* peers;
+CPeer *peers;
 i32 pSocket;
-i16 socketPort = 8080;
+i16 nSocketPort = 8080;
 
 void AModule_OnCreate() {
     peers = NULL;
 
-    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Starting server on port %d.\n", socketPort);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Starting server on port %d.\n", nSocketPort);
 
-    pSocket = socket(AF_INET, SOCK_STREAM, 0);
+    // create a listening TCP socket on port 9999 (server)
+    IPaddress ipAddress;
+    TCPsocket tcpSocket;
 
-    if (pSocket < 0) {
-        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Could not create a socket.\n");
-        assert(0);
-    } else {
-        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Socket created.\n");
+    if (SDLNet_ResolveHost(&ipAddress, NULL, nSocketPort) == -1) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
+        exit(1);
     }
 
-    struct sockaddr_in serverAddress = {0}, client = {0};
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-    serverAddress.sin_port = htons(socketPort);
-
-    if ((bind(pSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress))) != 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Socket bind failed.\n");
-        assert(0);
-    } else {
-        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Socket bound.\n");
-    }
-
-    if ((listen(pSocket, 5)) != 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Socked listen failed.\n");
-        assert(0);
-    } else {
-        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Socket listening.\n");
-    }
-
-    i32 len = sizeof(client);
-
-    i32 pConnection = accept(pSocket, (struct sockaddr*)&client, &len);
-
-    if (pConnection < 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Socket accept failed.\n");
-        assert(0);
-    } else {
-        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Socket accepted connection.\n");
+    tcpSocket = SDLNet_TCP_Open(&ipAddress);
+    if (!tcpSocket) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDLNet_TCP_Open: %s\n", SDLNet_GetError());
+        exit(2);
     }
 
     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "SocketServer module created!\n");
